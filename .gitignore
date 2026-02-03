@@ -1,0 +1,73 @@
+# --- Windows System Files ---
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# --- PowerShell / Terminal ---
+# Ignore history or temporary session files if generated in-repo
+.ps1_history
+*.log
+*.tmp
+
+# --- IDEs (Cursor and VS Code) ---
+.vscode/
+.cursor/
+# If you want to share extensions/settings but ignore local state:
+# !.vscode/settings.json
+# !.vscode/tasks.json
+# !.vscode/launch.json
+# !.vscode/extensions.json
+*.code-workspace
+
+# --- .NET / C# ---
+bin/
+obj/
+out/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.userosscache
+*.sln.docstates
+# Visual Studio / Roslyn caches
+.vs/
+.rootdir
+TestResults/
+
+# --- Node.js / Yarn / NPM ---
+node_modules/
+/jspm_packages/
+.npm/
+.yarn-integrity
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# --- Environment Secrets (CRITICAL) ---
+.env
+.env.local
+.env.*.local
+*.pfx
+*.certificate
+*.secret
+
+# --- Python (Since you use it in Cursor) ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.pytest_cache/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+*.bacpac
+
+# NuGet symbol cache
+.tools/
+
+*.env*

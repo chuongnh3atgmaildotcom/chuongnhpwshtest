@@ -1,0 +1,50 @@
+# this is a text file, no tab autocomplete please
+
+why 2 start, where is the first come form: no matching jobrecord id -> another guy did it with irrelevant TargetResourceGroup sactcms4903951pwp001
+
+why reset before start? -> it sort by last status update, actually start is created before reset but reset finish first
+
+way to link start + reset by a same deployment trigger
+2 reset job has same StartEPiDeploymentJobId a002f853-ddb2-4aa2-be4b-51c859de89ed
+- Reset-EPiDeployment 1/30/2026, 17:24 https://portal.azure.com/#view/Microsoft_Azure_Automation/JobDashboard.ReactView/jobResourceId/%2Fsubscriptions%2Fc58e3edc-13cf-497b-bcd3-d0cf2feaf596%2FresourceGroups%2FQAAutomationAccount-NE%2Fproviders%2FMicrosoft.Automation%2FautomationAccounts%2FQAAutomationAccount-NE%2Fjobs%2Fb99f0429-ad3c-4b00-9120-db1b47e275db/runbookResourceId/%2Fsubscriptions%2Fc58e3edc-13cf-497b-bcd3-d0cf2feaf596%2FresourceGroups%2FQAAutomationAccount-NE%2Fproviders%2FMicrosoft.Automation%2FautomationAccounts%2FQAAutomationAccount-NE%2Frunbooks%2FReset-EPiDeployment/internal_bladeCallId~/1/internal_bladeCallerParams~/%7B%22initialData%22%3A%7B%22v%22%3Anull%2C%22%23fxSerialized%23%22%3Atrue%7D%7D
+- Reset-EPiDeployment 1/30/2026, 17:28 https://portal.azure.com/#view/Microsoft_Azure_Automation/JobDashboard.ReactView/jobResourceId/%2Fsubscriptions%2Fc58e3edc-13cf-497b-bcd3-d0cf2feaf596%2FresourceGroups%2FQAAutomationAccount-NE%2Fproviders%2FMicrosoft.Automation%2FautomationAccounts%2FQAAutomationAccount-NE%2Fjobs%2F658c10ea-1c4e-4c3d-a067-2490b3e05bec/runbookResourceId/%2Fsubscriptions%2Fc58e3edc-13cf-497b-bcd3-d0cf2feaf596%2FresourceGroups%2FQAAutomationAccount-NE%2Fproviders%2FMicrosoft.Automation%2FautomationAccounts%2FQAAutomationAccount-NE%2Frunbooks%2FReset-EPiDeployment/internal_bladeCallId~/1/internal_bladeCallerParams~/%7B%22initialData%22%3A%7B%22v%22%3Anull%2C%22%23fxSerialized%23%22%3Atrue%7D%7D
+why start + reset dep? also irrelevant, it will not auto trigger
+
+filter jobs by type: go to runbook
+filter by Id: job list inside runbook.
+filter by kql queries in Log Analytics workspaces:
+
+why portal show error but az show warning?
+Failed to prepare container 'quicksilvernetcore.cms.app.0.1.1.nupkg' in repository 'cms' on ACR 'chngcommerc99sab'. Retry attempts left: 1. The error was: az exited with error: 1. ERROR: The run with ID 'cg1' finished with unsuccessful status 'Failed'. Show run details by 'az acr task show-run -r chngcommerc99sab --run-id cg1'. Show run logs by 'az acr task logs -r chngcommerc99sab --run-id cg1'.
+
+
+Direct deploy is required for database package? it's by design, because of reasons
+
+why latest commerce went into generic QAAutomationAccount?
+see app function -> get Automation account. It will automatically rotate between 2 hardcoded accounts.
+
+flow: 1.(repo epicloud) -> 2.paasportal (repo paas) -> 3.az runbook (repo epi-deployment) -> 4.az cloud or cloudflare
+customer's dev use 1st to deploy.
+customer's dev + dxp cs use 2st to update infra
+not complex operator (list hostname, purge cache) will go straight to step 4
+
+ways to interract directly with azure api? yes just login or get a key
+
+
+
+- turnstile instance?
+
+| product                       | name                  | Notes / Details                        |
+|--------------------------------------|--------------------------------------|----------------------------------------|
+| Episerver DXC API                    | api                                  | api key                                |
+| Content Management System (Test)     | Integration,                         |  environment/az web app                |
+| Optimizely Translation Service       | Integration                          |                                        |
+| Developer Portal (CMS) (Test)        | chngcommerce - 6802                  | the paas dashboard GUI                 |
+
+
+    - view wokflow to view turnstile operation's log
+    - edit by creating a draft then publish
+    - home -> migration: migrate from portal created to tunrstile created project, which will create a default collection of turnstile product
+
+===============================
+- primary version?
