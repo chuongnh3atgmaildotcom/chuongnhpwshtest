@@ -1,0 +1,226 @@
+Azure.RequestFailedException
+  HResult=0x80131500
+  Message=The user, group or application 'appid=04f0c124-f2bc-4f59-8241-bf6df9866bbd;oid=f9a54707-897e-4cbd-a649-ded412570e4d;numgroups=7;iss=https://sts.windows.net/c6d260b3-0c63-4ced-b15b-ed462d08c5c4/' does not have secrets get permission on key vault 'DXCPaaS-Local;location=NorthEurope'. For help resolving this issue, please see https://go.microsoft.com/fwlink/?linkid=2125287
+Status: 403 (Forbidden)
+ErrorCode: Forbidden
+
+Content:
+{"error":{"code":"Forbidden","message":"The user, group or application 'appid=04f0c124-f2bc-4f59-8241-bf6df9866bbd;oid=f9a54707-897e-4cbd-a649-ded412570e4d;numgroups=7;iss=https://sts.windows.net/c6d260b3-0c63-4ced-b15b-ed462d08c5c4/' does not have secrets get permission on key vault 'DXCPaaS-Local;location=NorthEurope'. For help resolving this issue, please see https://go.microsoft.com/fwlink/?linkid=2125287","innererror":{"code":"AccessDenied"}}}
+
+Headers:
+Cache-Control: no-cache
+Pragma: no-cache
+x-ms-keyvault-region: North Europe
+x-ms-client-request-id: c07df032-2daa-4b7b-803f-6ef656684019
+x-ms-request-id: ac8145d6-7441-4afe-8682-cb22e9e40b42
+x-ms-keyvault-service-version: 1.9.3019.1
+x-ms-keyvault-network-info: conn_type=Ipv4;addr=103.37.29.106;act_addr_fam=InterNetwork;
+X-Content-Type-Options: REDACTED
+Strict-Transport-Security: REDACTED
+Date: Thu, 12 Feb 2026 03:34:32 GMT
+Content-Type: application/json; charset=utf-8
+Expires: -1
+Content-Length: 452
+
+  Source=Azure.Security.KeyVault.Secrets
+  StackTrace:
+   at Azure.Security.KeyVault.KeyVaultPipeline.<SendRequestAsync>d__29.MoveNext()
+   at Azure.Security.KeyVault.KeyVaultPipeline.<SendRequestAsync>d__21`1.MoveNext()
+   at Azure.Security.KeyVault.Secrets.SecretClient.<GetSecretAsync>d__8.MoveNext()
+   at Polly.Policy.<>c__DisplayClass208_0`1.<<ExecuteAsyncInternal>b__0>d.MoveNext()
+   at Polly.RetrySyntaxAsync.<>c__DisplayClass21_1.<<WaitAndRetryAsync>b__1>d.MoveNext()
+   at Polly.Retry.RetryEngine.<ImplementationAsync>d__1`1.MoveNext()
+   at Polly.Retry.RetryEngine.<ImplementationAsync>d__1`1.MoveNext()
+   at Polly.Policy.<ExecuteAsyncInternal>d__208`1.MoveNext()
+   at EPiServer.PaaS.Infrastructure.Configuration.KeyVaultManager.<>c__DisplayClass9_0.<GetSecret>b__0() in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\KeyVaultManager.cs:line 62
+   at EPiServer.PaaS.Infrastructure.Configuration.RuntimeCacheManager.ReadThrough[T](String key, Func`1 readValue) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\RuntimeCacheManager.cs:line 58
+   at EPiServer.PaaS.Infrastructure.Configuration.RuntimeCacheManager.ReadThroughLazyUpdating[T](String key, Func`1 readValue) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\RuntimeCacheManager.cs:line 71
+   at EPiServer.PaaS.Infrastructure.Configuration.KeyVaultManager.GetSecret(String secretName) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\KeyVaultManager.cs:line 58
+   at EPiServer.PaaS.Infrastructure.Configuration.PaasConfigurationManager.GetConnectionString(String key) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\PaasConfigurationManager.cs:line 36
+   at EPiServer.PaaS.Services.Common.WorkerServiceBase.StartAsync(CancellationToken cancellationToken) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Services.Common\WorkerServiceBase.cs:line 68
+   at Microsoft.Extensions.Hosting.Internal.Host.<<StartAsync>b__15_1>d.MoveNext()
+
+
+
+
+
+
+  C:\Python314\Scripts\
+  C:\Python314\
+  C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin
+  C:\windows\system32
+  C:\windows
+  C:\windows\System32\Wbem
+  C:\windows\System32\WindowsPowerShell\v1.0\
+  C:\windows\System32\OpenSSH\
+  C:\Program Files\WindowsPowerShell\Scripts
+  C:\Program Files\Microsoft SQL Server\170\Tools\Binn\
+  C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\
+  C:\Program Files\dotnet\
+  C:\Program Files\nodejs\
+  C:\ProgramData\chocolatey\bin
+  C:\Program Files\PowerShell\7\
+  C:\Program Files\Git\cmd
+  C:\Program Files\Docker\Docker\resources\bin
+  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WindowsApps
+  C:\Users\ChuongNguyen\AppData\Local\Programs\Microsoft VS Code\bin
+  C:\Users\ChuongNguyen\.dotnet\tools
+  C:\Users\ChuongNguyen\AppData\Local\PowerToys\DSCModules\
+  C:\Users\ChuongNguyen\AppData\Local\Programs\cursor\resources\app\bin
+  C:\Users\ChuongNguyen\AppData\Roaming\npm
+  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WinGet\Packages\paolosalvatori.ServiceBusExplorer_Microsoft.Winget.Source_8wekyb3d8bbwe\.
+  C:\Program Files\Vim\vim91
+  C:\Program Files\WindowsPowerShell\Modules\Az.Accounts\5.3.2\lib\netstandard2.0\runtimes\win-x64\native
+
+  C:\Python314\Scripts\
+  C:\Python314\
+  C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin
+  C:\windows\system32
+  C:\windows
+  C:\windows\System32\Wbem
+  C:\windows\System32\WindowsPowerShell\v1.0\
+  C:\windows\System32\OpenSSH\
+  C:\Program Files\WindowsPowerShell\Scripts
+  C:\Program Files\Microsoft SQL Server\170\Tools\Binn\
+  C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\
+  C:\Program Files\dotnet\
+  C:\Program Files\nodejs\
+  C:\ProgramData\chocolatey\bin
+  C:\Program Files\PowerShell\7\
+  C:\Program Files\Git\cmd
+  C:\Program Files\Docker\Docker\resources\bin
+  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WindowsApps
+  C:\Users\ChuongNguyen\AppData\Local\Programs\Microsoft VS Code\bin
+  C:\Users\ChuongNguyen\.dotnet\tools
+  C:\Users\ChuongNguyen\AppData\Local\PowerToys\DSCModules\
+  C:\Users\ChuongNguyen\AppData\Local\Programs\cursor\resources\app\bin
+  C:\Users\ChuongNguyen\AppData\Roaming\npm
+  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WinGet\Packages\paolosalvatori.ServiceBusExplorer_Microsoft.Winget.Source_8wekyb3d8bbwe\.
+  C:\Program Files\Vim\vim91
+
+
+
+  Use Get-AzResource with the web app resource type so you only get lightweight resource records, then count them. That avoids loading full web app config (unlike Get-AzWebApp).
+Count web apps in the current subscription:
+(Get-AzResource -ResourceType Microsoft.Web/sites).Count
+Count without keeping the list in memory (stream and count):
+@(Get-AzResource -ResourceType Microsoft.Web/sites).Count
+Only slots (exclude app root):
+Slots are Microsoft.Web/sites/slots. To count only the main apps (no slots):
+(Get-AzResource -ResourceType Microsoft.Web/sites | Where-Object { $_.ResourceId -notmatch '/slots/' }).Count
+Get-AzResource -ResourceType Microsoft.Web/sites returns minimal resource objects (Id, Name, ResourceGroupName, Type, etc.), not full WebApp objects, so it’s more efficient than Get-AzWebApp when you only need a count. Azure doesn’t expose a “count only” API, so listing with this resource type is the usual approach.
+
+
+
+EPiServer.PaaS.Application\Common\CommonConstants.cs
+ 
+  The regex PaasPortalKeyVaultSecretNameRegex blocks names starting with optimizely|episerver|dxpinternal|.... However,
+  OPTIMIZELY_DXP_DEPLOYMENT_ID starts with optimizely — so on Windows this prefix regex should already block it. But the
+   Linux regex (LinuxPaasPortalKeyVaultSecretNameRegex) is more restrictive and only blocks optimizely followed by
+  specific suffixes like turnstile, userflow, etc. — so it would not catch OPTIMIZELY_DXP_DEPLOYMENT_ID on Linux.
+ 
+
+
+chngchuong1h3gz9inte    Linux
+OPTIMIZELY_DXP_DEPLOYMENT_ID 4aaa9e56-81c0-43c5-911e-a3a15efc3a26
+
+chngcommerc99sabinte    Linux
+chngcommerc99sabs001    Linux
+chngcommerc99sabprep    Linux
+mgrchngcommercxa74ninte Windows
+chngcommercxa74ninte    Windows
+
+Principal
+Principal name
+Chuong Nguyen
+Object ID
+f9a54707-897e-4cbd-a649-ded412570e4d
+Application
+Authorized application
+chngchuong1h3gz9inte
+Object ID
+a558fb43-61b8-47e4-b8a0-dabc654a2b8a
+
+1. appsetting has secret guid
+2. portal: addsecret mock -> keyvault: has mock. tag: customer, nonsnesitive,  name
+
+4. portal: deploy
+    caveat2: portal: tag: toberemove true. appsetting (slot): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee
+5. portal: complete
+    caveat2: portal: tag: toberemove true. appsetting (prod): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee. SLot not have
+
+--------------------------------
+1. appsetting has secret guid
+2. portal: addsecret mock -> keyvault: has mock. tag: customer, nonsnesitive,  name
+3. portal: delete secret, secret show: to be removed -> keyvault: has mock same tag
+
+4. portal: deploy
+    caveat3: portal + keyvault: tag: toberemove true. appsetting (slot): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee
+5. portal: complete
+    caveat3: portal + keyvault: tag: toberemove true. appsetting (prod): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee. SLot not have 
+6. have to make another deployment (80b4b5bd-8c1a-438d-adb2-bded474903d6 - awaiting verification?) -> delete secret in slot setting- > compplete the deployment to remove secret on keyvault (and reflected on portal)
+    
+
+windows:
+mgrchngcommercxa74ninte Windows
+
+1. appsetting has secret guid
+2. portal: addsecret mock -> keyvault: has mock. tag: customer, nonsnesitive,  name
+3. portal: delete secret, secret show: to be removed -> keyvault: has mock same tag
+
+4. portal: deploy
+    caveat3: portal + keyvault: tag: toberemove true. appsetting (slot): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee
+5. portal: complete
+    caveat3: portal + keyvault: tag: toberemove true. appsetting (prod): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee. SLot not have 
+6. have to make another deployment (80b4b5bd-8c1a-438d-adb2-bded474903d6 - awaiting verification?) -> delete secret in slot setting- > compplete the deployment to remove secret on keyvault (and reflected on portal)
+
+--------------------------------
+### internal products development environment: 
+
+- same subs c58e3edc-13cf-497b-bcd3-d0cf2feaf596
+- direct runbook test: we could use IntegrationAutomation1 -> IntegrationAutomation7
+- local 
+    - paas 
+        - RS:
+            - deployed in local
+            - use emulated container by aspire
+            - use some resource (keyvault  etc.) in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaas-Local/overview
+            - use dev own servicebus resource
+        - deployment:
+            - local branch
+    - AA: 
+        - RS: paas call AA IntegrationAutomation
+        - deployment: this AA meant for local so have to deploy yourself when testing: goto github action, deploy branch to AA IntegrationAutomation or dirtier, go to appconfig and point to DevAutomationAccount-NE + DevAutomationAccount-NE 
+- dev 
+    - paas 
+        - RS:
+            - custom host name: https://dxcpaas-dev.epimore.com/
+            - deployed in in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Dev/overview
+            - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaasdev/overview
+        - deployment:
+            - check if relevant revision on the ...
+    - AA: 
+        - RS: rotate DevAutomationAccount-NE + DevAutomationAccount-NE 
+        - deployment:
+            - it's deployed daily. Check ...
+- test 
+    - paas 
+        - RS:
+            - custom host name: https://dxcpaas.epimore.com/
+            - deployed in in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Test/overview
+            - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaastest/overview
+        - deployment:
+            - check if relevant revision on the release (could be from main or hotfix/.. branch)
+    - AA: 
+        - RS: rotate QAAutomationAccount-NE + QAAutomationAccount-NE 
+        - deployment:
+            
+
+--------------------------------    
+what 1 api cred created in the portal represent in Az auth system?
+service bus and their emulation in local paas
+NAT
+DNS
+
+
+
