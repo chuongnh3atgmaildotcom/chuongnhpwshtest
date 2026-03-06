@@ -1,108 +1,108 @@
-
-scope concept: 
- see result of ps://developers.cloudflare.com/api/resources/firewall/subresources/access_rules/methods/create/#(params)%20default%20%3E%20(param)%20zone_id%20%3E%20(schema)
- id, email, type (org/zone)
- Scope is the entity (container) the rule is attached to
- scenario 1: Two access rules in the same entity scope → same scope.id?
-  Yes. If you create two access rules in the same scope (e.g. same account, both via accounts/{account_id}/firewall/access_rules/rules with the same account_id), both rules will have the same scope in the API response: same scope.id, same scope.type.
- scenario 2: if I create 2 kind-of-rules that have scope object as notion of scope, in same entity, they would have same scope.id?
-  If both rule types use a scope object (like IP Access Rules do) and both are created in the same entity (same account or same zone), then in practice yes – they should have the same scope.id.
- scenario 3: if I create 1 access_rule in account and 1 access_rule in 1 of that accounts' zone, the first access rule is trickled down to zone, so they would have same scope.id?
-  No. They have different scope.id (and different scope.type).
- The essence of my question is: the id itself is not identical, but uniqueness of using scope.id and entity.id in many scenarios is identical
-  If the only goal were “uniquely identify the entity,” a single entity id could be enough. The reason Cloudflare still uses a separate scope.id is mostly system boundaries, not uniqueness:
-  The firewall/access-rules service can keep its own identifier for “where this rule is attached” and store/index by that.
-  It doesn’t have to depend on the Accounts (or Zones/User) API’s notion of “entity id,” or guarantee that the two are the same.
-  So you get same uniqueness (one id per entity in each world) but different id spaces: firewall scope.id vs account/zone/user entity id. That avoids coupling and lets each system evolve its ids independently.
-  So: the uniqueness of using scope.id vs entity id is often the same; the id itself differs because they live in different systems, not because the concept of “one scope per entity” is different.
-
-
-
-
-Use Get-AzResource with the web app resource type so you only get lightweight resource records, then count them. That avoids loading full web app config (unlike Get-AzWebApp).
-    Count web apps in the current subscription:
-    (Get-AzResource -ResourceType Microsoft.Web/sites).Count
-    Count without keeping the list in memory (stream and count):
-    @(Get-AzResource -ResourceType Microsoft.Web/sites).Count
-    Only slots (exclude app root):
-    Slots are Microsoft.Web/sites/slots. To count only the main apps (no slots):
-    (Get-AzResource -ResourceType Microsoft.Web/sites | Where-Object { $_.ResourceId -notmatch '/slots/' }).Count
-    Get-AzResource -ResourceType Microsoft.Web/sites returns minimal resource objects (Id, Name, ResourceGroupName, Type, etc.), not full WebApp objects, so it’s more efficient than Get-AzWebApp when you only need a count. Azure doesn’t expose a “count only” API, so listing with this resource type is the usual approach.
+### done:
+    scope concept: 
+    see result of ps://developers.cloudflare.com/api/resources/firewall/subresources/access_rules/methods/create/#(params)%20default%20%3E%20(param)%20zone_id%20%3E%20(schema)
+    id, email, type (org/zone)
+    Scope is the entity (container) the rule is attached to
+    scenario 1: Two access rules in the same entity scope → same scope.id?
+    Yes. If you create two access rules in the same scope (e.g. same account, both via accounts/{account_id}/firewall/access_rules/rules with the same account_id), both rules will have the same scope in the API response: same scope.id, same scope.type.
+    scenario 2: if I create 2 kind-of-rules that have scope object as notion of scope, in same entity, they would have same scope.id?
+    If both rule types use a scope object (like IP Access Rules do) and both are created in the same entity (same account or same zone), then in practice yes – they should have the same scope.id.
+    scenario 3: if I create 1 access_rule in account and 1 access_rule in 1 of that accounts' zone, the first access rule is trickled down to zone, so they would have same scope.id?
+    No. They have different scope.id (and different scope.type).
+    The essence of my question is: the id itself is not identical, but uniqueness of using scope.id and entity.id in many scenarios is identical
+    If the only goal were “uniquely identify the entity,” a single entity id could be enough. The reason Cloudflare still uses a separate scope.id is mostly system boundaries, not uniqueness:
+    The firewall/access-rules service can keep its own identifier for “where this rule is attached” and store/index by that.
+    It doesn’t have to depend on the Accounts (or Zones/User) API’s notion of “entity id,” or guarantee that the two are the same.
+    So you get same uniqueness (one id per entity in each world) but different id spaces: firewall scope.id vs account/zone/user entity id. That avoids coupling and lets each system evolve its ids independently.
+    So: the uniqueness of using scope.id vs entity id is often the same; the id itself differs because they live in different systems, not because the concept of “one scope per entity” is different.
 
 
 
-chngcommerc99sabinte    Linux
-chngcommerc99sabs001    Linux
-chngcommerc99sabprep    Linux
-mgrchngcommercxa74ninte Windows
-chngcommercxa74ninte    Windows
+    Use Get-AzResource with the web app resource type so you only get lightweight resource records, then count them. That avoids loading full web app config (unlike Get-AzWebApp).
+        Count web apps in the current subscription:
+        (Get-AzResource -ResourceType Microsoft.Web/sites).Count
+        Count without keeping the list in memory (stream and count):
+        @(Get-AzResource -ResourceType Microsoft.Web/sites).Count
+        Only slots (exclude app root):
+        Slots are Microsoft.Web/sites/slots. To count only the main apps (no slots):
+        (Get-AzResource -ResourceType Microsoft.Web/sites | Where-Object { $_.ResourceId -notmatch '/slots/' }).Count
+        Get-AzResource -ResourceType Microsoft.Web/sites returns minimal resource objects (Id, Name, ResourceGroupName, Type, etc.), not full WebApp objects, so it’s more efficient than Get-AzWebApp when you only need a count. Azure doesn’t expose a “count only” API, so listing with this resource type is the usual approach.
 
 
 
---------------------------------
-## external
-- I could create cms + commerce project in chng rs
-- default custom hostname: chngcmswin95r1zinte.paastest.epimore.com (chngcmswin95r1zinte created on https://dxcpaas-stage.epimore.com/ but default host name always paastest.epimore.com regardless of paas env). paastest.epimore.com NS is point to aws route53 with not so complex setup.
+    chngcommerc99sabinte    Linux
+    chngcommerc99sabs001    Linux
+    chngcommerc99sabprep    Linux
+    mgrchngcommercxa74ninte Windows
+    chngcommercxa74ninte    Windows
 
-### internal products development environment: 
 
-- same subs c58e3edc-13cf-497b-bcd3-d0cf2feaf596
-- direct runbook test: we could use IntegrationAutomation1 -> IntegrationAutomation7
-- local 
-    - paas 
-        - RS:
-            - deployed in local
-            - use emulated container by aspire
-            - use some resource (keyvault  etc.) in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaas-Local/overview
-            - use dev own servicebus resource in https://portal.azure.com/#resource/subscriptions/d34b6707-c9e0-4fd4-a412-adecf0b5a352/resourceGroups/chng-dev
-        - deployment:
-            - local branch
-    - AA: 
-        - RS: paas call AA IntegrationAutomation
-        - deployment: this AA meant for local so have to deploy yourself when testing: goto github action, deploy branch to AA IntegrationAutomation or dirtier, go to appconfig and point to DevAutomationAccount-NE + DevAutomationAccount-NE 
-- staging: 
-    - paas 
-        - RS:
-            - custom host name: https://dxcpaas-stage.epimore.com/
-            - web infra deployed in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Stage/overview
-            - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaasstage/overview
-            - GetAutomationAccount function app at rs https://dxcpaasstagefunctio86350.azurewebsites.net/api/GetAutomationAccount?code=JbgaKt8ZqPSP...Zw==
-        - deployment:
-            - @TODO
-    - AA: 
-        - RS: rotate QAAutomationAccount + QAAutomationAccount-NE
-        - deployment:
-            - it's deployed daily. Check ...        
-- dev
 
-    - paas 
-        - RS:
-            - custom host name: https://dxcpaas-dev.epimore.com/
-            - web infra deployed in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Dev/overview
-            - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaasdev/overview
-        - deployment:
-            - check if relevant revision on the ...
-    - AA: 
-        - RS: rotate DevAutomationAccount-NE + DevAutomationAccount-NE 
-        - deployment:
-            - it's deployed daily. Check ...
-- test 
-    - paas 
-        - RS:
-            - custom host name: https://dxcpaas.epimore.com/
-            - deployed in in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Test/overview
-            - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaastest/overview
-        - deployment:
-            - check if relevant revision on the release (could be from main or hotfix/.. branch)
-    - AA: 
-        - RS: rotate QAAutomationAccount-NE + QAAutomationAccount-NE 
-        - deployment:
-            
+    --------------------------------
+    ## external
+    - I could create cms + commerce project in chng rs
+    - default custom hostname: chngcmswin95r1zinte.paastest.epimore.com (chngcmswin95r1zinte created on https://dxcpaas-stage.epimore.com/ but default host name always paastest.epimore.com regardless of paas env). paastest.epimore.com NS is point to aws route53 with not so complex setup.
 
-- paas test:
-    - ps1 to be called by github action, basically just call to dotnet test
-    - 4 test solution folder with many projects: https://optimizely-ext.atlassian.net/wiki/spaces/DXCDev/pages/207389149/About+automated+testing
+    ### internal products development environment: 
 
+    - same subs c58e3edc-13cf-497b-bcd3-d0cf2feaf596
+    - direct runbook test: we could use IntegrationAutomation1 -> IntegrationAutomation7
+    - local 
+        - paas 
+            - RS:
+                - deployed in local
+                - use emulated container by aspire
+                - use some resource (keyvault  etc.) in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaas-Local/overview
+                - use dev own servicebus resource in https://portal.azure.com/#resource/subscriptions/d34b6707-c9e0-4fd4-a412-adecf0b5a352/resourceGroups/chng-dev
+            - deployment:
+                - local branch
+        - AA: 
+            - RS: paas call AA IntegrationAutomation
+            - deployment: this AA meant for local so have to deploy yourself when testing: goto github action, deploy branch to AA IntegrationAutomation or dirtier, go to appconfig and point to DevAutomationAccount-NE + DevAutomationAccount-NE 
+    - staging: 
+        - paas 
+            - RS:
+                - custom host name: https://dxcpaas-stage.epimore.com/
+                - web infra deployed in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Stage/overview
+                - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaasstage/overview
+                - GetAutomationAccount function app at rs https://dxcpaasstagefunctio86350.azurewebsites.net/api/GetAutomationAccount?code=JbgaKt8ZqPSP...Zw==
+            - deployment:
+                - @TODO
+        - AA: 
+            - RS: rotate QAAutomationAccount + QAAutomationAccount-NE
+            - deployment:
+                - it's deployed daily. Check ...        
+    - dev
+
+        - paas 
+            - RS:
+                - custom host name: https://dxcpaas-dev.epimore.com/
+                - web infra deployed in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Dev/overview
+                - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaasdev/overview
+            - deployment:
+                - check if relevant revision on the ...
+        - AA: 
+            - RS: rotate DevAutomationAccount-NE + DevAutomationAccount-NE 
+            - deployment:
+                - it's deployed daily. Check ...
+    - test 
+        - paas 
+            - RS:
+                - custom host name: https://dxcpaas.epimore.com/
+                - deployed in in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Test/overview
+                - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaastest/overview
+            - deployment:
+                - check if relevant revision on the release (could be from main or hotfix/.. branch)
+        - AA: 
+            - RS: rotate QAAutomationAccount-NE + QAAutomationAccount-NE 
+            - deployment:
+                
+
+    - paas test:
+        - ps1 to be called by github action, basically just call to dotnet test
+        - 4 test solution folder with many projects: https://optimizely-ext.atlassian.net/wiki/spaces/DXCDev/pages/207389149/About+automated+testing
+
+### wip
 - custom hostname flow: https://optimizely-ext.atlassian.net/wiki/spaces/dxcdev/pages/207390515/Hostnames
     1. create app
         - 1.1
@@ -119,17 +119,24 @@ chngcommercxa74ninte    Windows
                 - actor: customer
                 - action: create app
             - after:
-                - output: 
+                - output artifact:
                     - az app with
                         public virtual IP
                         domain verification ID (same for all webapp/functionapp in one subscription)
-                        default custom hostname: chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net
+                        default azapp custom hostname: chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net
                     - new cf zone chngcmswin95r1zinte.dxptest.optimizely.com (only if fullzone custom domain ??)
                     new dns records in exsiting cf zone cmstest.optimizely.com (only if cms saas ??) 
                     new dns record in epimore.com: chngcmswin95r1zinte.paastest CNAME inte.chngcmswin95r1z.chng.epimore.com
                     new dns record in awsr53: chngcmswin95r1zinte.paastest.epimore.com -> chngcmswin95r1zinte.paastest.epimore.com.cdn.cloudflare.net.
-                                     
-
+                - causality: 1.3
+        - 1.3:(my assumption)
+            - before:
+            - during:
+                - actor: PaaS/EPiServer.PaaS.ProvisioningWorker.Base/ProvisioningHandlers/ProvisionCustomHostNameHandler.cs:AddCustomHostname
+                - action: _route53Manager.AddRecord(_paasZoneId, fullName, ttl: 600, RecordType.CNAME, cloudFlareName);
+            - after:
+                - new dns record in awsr53: inte.abc.paastest.co.uk.paastest.epimore.com. -> inte.abc.paastest.co.uk.cdn.cloudflare.net.
+                - new dns record in awsr53: inte.chngcmswin95r1z.chng.epimore.com. -> chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net.
     2. add custom host name
         - 2.1
             - before:
@@ -139,17 +146,20 @@ chngcommercxa74ninte    Windows
                 - input: inte.abc.paastest.co.uk
             - after:
                 - causality: 2.3
+
         - 2.3
             - before:
             - during:
                 - actor: paas
                 - action: call runbook Set-CloudflareBaseline.ps1
             - after:
-                - output:
+                - output
                     cloudflare-verify.abc.paastest.co.uk TXT ..
                     asuid.inte.abc.paastest.co.uk TXT ...
                     CNAME inte.abc.paastest.co.uk inte.abc.paastest.co.uk.paastest.epimore.com
-                    new (partial) cf zone: .abc.paastest.co.uk. record: inte CNAME inte.chngcmswin95r1z.chng.epimore.com
+                - output artifact: 
+                    - new (partial) cf zone: .abc.paastest.co.uk. record: inte CNAME inte.chngcmswin95r1z.chng.epimore.com
+                    
             - 2.3.1: debug: developer go to new (partial) cf zone: .abc.paastest.co.uk. record's and disable proxy flag, this enable full dig
         - 2.4:
             - before: 
@@ -195,7 +205,7 @@ chngcommercxa74ninte    Windows
                 - actor: customer
                 - action: go to their DNS provider, put TXT asuid
             - after:
-                - azurr zone active (internal AZ DNS created default when creating app - can not view config but can dig)
+                - azure zone active (internal AZ DNS created default when creating app - can not view config but can dig)
                 ```
                     ...
                     inte.chngcmswin95r1z.chng.epimore.com. 600 IN CNAME chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net.
@@ -207,72 +217,158 @@ chngcommercxa74ninte    Windows
                 ```
 
         
-- dns resolver flow: https://optimizely-ext.atlassian.net/wiki/spaces/WO/pages/200921934/4.1.5+-+Routing+DNS+domains+to+DXP
-    AZ webapp default custom hostname: chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net
-    waws-prod-db3-235.sip.azurewebsites.windows.net.
-    waws-prod-db3-235-a505.northeurope.cloudapp.azure.com.
-    AZ webapp Virtual IP address 20.107.224.1
+- dns resolver flow (non-saas) https://optimizely-ext.atlassian.net/wiki/spaces/WO/pages/200921934/4.1.5+-+Routing+DNS+domains+to+DXP
+    - custom hostname from customer DNS: inte.abc.paastest.co.uk
+    - aws r53: inte.abc.paastest.co.uk.paastest.epimore.com.
+        - after 2.4 add portal guide CNAME to customer's dns provider
+    - CDN: inte.abc.paastest.co.uk.cdn.cloudflare.net.
+        - after 1.2 create app, part of paas provisioning
+        - after 2.4 add az verfify txt
+    - aws r53: inte.chngcmswin95r1z.chng.epimore.com
+        - after 2.3 add custom host name auto create zone
+        - after 2.5 add cf verify txt
+    - az dns routing: 
+        chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net.
+        waws-prod-db3-235.sip.azurewebsites.windows.net.
+        waws-prod-db3-235-a505.northeurope.cloudapp.azure.com.
+    - AZ webapp Virtual IP address: 20.107.224.1
 
 
     2. https://docs.developers.optimizely.com/digital-experience-platform/docs/environment-configurations
 
---------------------------------    
+### todo
+    Where is aws txt? I found mention of awverify https://optimizely-ext.atlassian.net/wiki/spaces/DXCDev/blog/2017/05/04/207389056/Testing+Cloudflare+support+in+PaaS+portal
 
-30755
-Add-CFAccount
-Add-CFCustomHostname
-Add-CFCustomSSLCertificate
-Add-CFDNSRecord
-Add-CFDNSZone
-Add-CFFirewallAccessRule
-Add-CFFirewallruleToZone
-Add-CFLBMonitor
-Add-CFLBOriginPool
-Add-CFLBRecord
-Add-CFPageRule
-Add-CFRuleset
-Add-CFRulesetRule
-Add-CFSpectrumApplication
-Add-CFWorkerRoute
+    --------------------------------  PaaS saga  
+
+    ## Runbook saga – component mapping
+
+    ### 1. Saga handler (single class, multiple message types)
+    | Item | Location |
+    |------|----------|
+    | Handler class | `EPiServer.PaaS.EnvironmentSynchronizationWorker.Base/MessageHandlers/HandleRunbookSaga.cs` |
+    | Role | Implements `IHandleMessage<T>` for RunbookJobStart, Stop, Resume, Waiting, InProgress, Finished, Failed. |
+
+    ### 2. Messages (saga commands/events)
+    | Item | Location |
+    |------|----------|
+    | Message types | `EPiServer.PaaS.Messages/Commands/RunbookCommand.cs` |
+    | Types | `RunbookJobStart`, `RunbookJobStop`, `RunbookJobResume`, `RunbookJobWaiting`, `RunbookJobInProgress`, `RunbookJobFinished`, `RunbookJobFailed` (all extend `RunbookCommand`). |
+
+    ### 3. Saga state
+    | Item | Location |
+    |------|----------|
+    | Entity | `EPiServer.PaaS.Core/Models/RunbookJob.cs` (extends `Entity`) |
+    | Repository interface | `EPiServer.PaaS.Application/DataAccess/Repositories/IRunbookJobRepository.cs` |
+    | Repository implementation | `EPiServer.PaaS.DataAccess/Services/Repositories/RunbookJobRepository.cs` |
+    | Persistence | **MongoDB** — collection `runbookjobs`. |
+
+    ### 4. Message transport
+    | Item | Location / driver |
+    |------|-------------------|
+    | Abstraction | `IBus` / `IAspireBus` (in Application/Infrastructure.ServiceBus) |
+    | Driver | **Azure Service Bus** — implementations in `EPiServer.PaaS.Infrastructure.ServiceBus.*`. |
+
+    ### 5. Producer (starts saga)
+    | Item | Location |
+    |------|----------|
+    | Creates job + sends Start | `EPiServer.PaaS.Infrastructure.Runbooks/RunbookManager.cs` |
+    | Runbook types | `.../Runbooks/*.cs` (e.g. `SetCloudflareBaselineRunbook.cs`), `RunbookBase.cs`. |
+
+    ### 6. Distributed lock
+    | Item | Location |
+    |------|----------|
+    | Interface | `EPiServer.PaaS.Application/DataAccess/Repositories/IDistributedLockManager.cs` |
+    | Implementation | `EPiServer.PaaS.DataAccess/Internal/DistributedLockManager.cs` |
+    | Persistence | **MongoDB** — collection `distributedlocks`. |
+
+    ### 7. External system (runbook execution)
+    | Item | Location / driver |
+    |------|-------------------|
+    | Interface | `IAzureAutomationManager` (Infrastructure.AzureManagement) |
+    | Implementation | `EPiServer.PaaS.Infrastructure.AzureManagement/AzureAutomationManager.cs` |
+    | Driver | **Azure Automation** — StartJob, GetJob, StopJob, streams, etc. |
+
+    ### 8. Consumer host
+    | Item | Location |
+    |------|----------|
+    | Worker host | `EPiServer.PaaS.Services.EnvironmentSynchronizationWorker/WorkerRole.cs` (inherits `WorkerServiceBase.cs`) |
+    | Role | Registers and runs message handlers that dispatch to `HandleRunbookSaga`. |
+
+    ### 9. Completion/error notification
+    | Item | Location |
+    |------|----------|
+    | Contract | `IRunbookEventHandler` / `DeploymentRunbookHandler` |
+    | Trigger | `_bus.Notify(message)` on `RunbookJobFinished` / `RunbookJobFailed`. |
+
+    ---
+
+    **Drivers summary**
+
+    - **MongoDB** — saga state (`runbookjobs`), locks (`distributedlocks`).
+    - **Azure Service Bus** — runbook command/event messages.
+    - **Azure Automation** — actual runbook execution (start, poll, stop, streams).
+
+    ----
+    So: saga entity = policy + state; implementation = producer (start a saga instances) + transport + consumer host (runs the saga logic).
+    --------------------------------    
 
 
-sample 
- Read all resources API token summary
- This API token will affect the below accounts and zones, along with their respective permissions
- DXP DevTest - Account Waiting Room:Read, Cloudflare WAN:Read, Trust and Safety:Read, Browser Rendering:Read, DNS Views:Read, Radar:Read, Load Balancing: Account Load Balancers:Read, Cloudflare CDS Compute Account:Read, DNS Settings:Read, Workers Builds Configuration:Read, Workers Pipelines:Read, Cloudforce One:Read, Zero Trust: PII:Read, Email Security:Read, AI Gateway:Read, DDoS Botnet Feed:Read, Queues:Read, Cloudflare Calls:Read, Address Maps:Read, Workers AI:Read, Vectorize:Read, Cloudflare One Networks:Read, Cloudflare One Connectors:Read, Cloudflare One Connector: WARP:Read, Cloudflare One Connector: cloudflared:Read, Hyperdrive:Read, Cloudchamber:Read, API Gateway:Read, Notifications:Read, URL Scanner:Read, Access: SSH Auditing:Read, Access: Custom Pages:Read, Constellation:Read, Cloudflare DEX:Read, IOT:Read, Page Shield:Read, Account: SSL and Certificates:Read, Allow Request Tracer:Read, Disable ESC:Read, Account Custom Pages:Read, Network flow:Read, HTTP Applications:Read, China Network Steering:Read, D1:Read, Pub/Sub:Read, Turnstile:Read, Intel:Read, Email Routing Addresses:Read, Cloudflare Pages:Read, Bulk URL Redirects:Read, Firewall policy:Read, L3/4 DDoS Managed Ruleset:Read, Transform Rules:Read, Select Configuration:Read, Account WAF:Read, Firewall Policy Packet Captures:Read, Workers R2 Storage:Read, Magic Transit:Read, Cloudflare Images:Read, DDoS Protection:Read, Account Rulesets:Read, IP Prefixes:Read, Workers Tail:Read, Account Analytics:Read, Cloudflare Tunnel:Read, Access: Mutual TLS Certificates:Read, Access: Device Posture:Read, Access: Service Tokens:Read, Access: Audit Logs:Read, Logs:Read, Rule Policies:Read, Account Filter Lists:Read, IP Prefixes: BGP On Demand:Read, Zero Trust:Read, Access: Organizations, Identity Providers, and Groups:Read, Workers KV Storage:Read, Workers Scripts:Read, Load Balancing: Monitors And Pools:Read, Account Firewall Access Rules:Read, DNS Firewall:Read, Stream:Read, Billing:Read, Account Settings:Read, Access: Apps and Policies:Read
- All zones - AI Crawl Control:Read, DNS Settings:Read, Cloud Connector:Read, Fraud Detection:Read, Response Compression:Read, Page Shield:Read, Bot Management Feedback:Read, Snippets:Read, Dmarc Management:Read, Zone Versioning:Read, Disable ESC:Read, Custom Pages:Read, Config Rules:Read, Single Redirect:Read, API Gateway:Read, Cache Rules:Read, Custom Error Rules:Read, Zaraz:Read, Email Routing Rules:Read, Origin Rules:Read, Managed Headers:Read, Web3 Hostnames:Read, Transform Rules:Read, HTTP DDoS Managed Ruleset:Read, Sanitize:Read, Bot Management:Read, Zone WAF:Read, Health Checks:Read, Waiting Room:Read, Access: Apps and Policies:Read, Zone Settings:Read, Zone:Read, DNS:Read, Workers Routes:Read, SSL and Certificates:Read, Logs:Read, Page Rules:Read, Load Balancers:Read, Firewall Services:Read, Analytics:Read
-
-1. cf entity taxonomy: resource, scope, permission, entity, services (produt), component(engine)
-    in domain knowledge, entity is general term ~ a top resource. 
-    top resource: zone + account: have idnetity and ownership
-    sub resrouces: A resource defines: A configurable capability, a functional object
-        acc: global
-            - Administrative Entities: Billing, Account Settings, Audit Logs.
-            - Global Security Entities: Account WAF, Account Firewall Access Rules, DNS Firewall.
-            - Developer/Compute Entities: Workers Scripts, Workers KV Storage, D1, Workers AI.
-            - Zero Trust Entities: Zero Trust, Access: Service Tokens, Cloudflare Tunnel.
-        zone: specific web
-            - Routing/Traffic Entities: DNS, Page Rules, Origin Rules, Single Redirect.
-            - Domain Security Entities: Zone WAF, Page Shield, SSL and Certificates.
-            - Domain Performance Entities: Cache Rules, Response Compression.
-
-    A service is a commercial and functional classification used for dashboard organization and product grouping. 
-    Selecting a service in the user interface causes the system to map that selection to a predefined array of resources. For example, the Zero Trust service maps directly to specific resources including Access Service Tokens and Access Audit Logs. During an API request, the authorization engine evaluates only the entity scope, the targeted resource, and the assigned permission
-    vice-versa: You updated one Resource (Account Filter Lists) within one Entity (your Account). Because the WAF, Zero Trust, Rate Limiting, and Magic Transit "Services" are just operational layers that query the same centralized list, they all inherit the change simultaneously without needing independent updates.
+    30755
+    Add-CFAccount
+    Add-CFCustomHostname
+    Add-CFCustomSSLCertificate
+    Add-CFDNSRecord
+    Add-CFDNSZone
+    Add-CFFirewallAccessRule
+    Add-CFFirewallruleToZone
+    Add-CFLBMonitor
+    Add-CFLBOriginPool
+    Add-CFLBRecord
+    Add-CFPageRule
+    Add-CFRuleset
+    Add-CFRulesetRule
+    Add-CFSpectrumApplication
+    Add-CFWorkerRoute
 
 
-We've talked about api resource and service (product). They help customer configure cf
+    sample 
+    Read all resources API token summary
+    This API token will affect the below accounts and zones, along with their respective permissions
+    DXP DevTest - Account Waiting Room:Read, Cloudflare WAN:Read, Trust and Safety:Read, Browser Rendering:Read, DNS Views:Read, Radar:Read, Load Balancing: Account Load Balancers:Read, Cloudflare CDS Compute Account:Read, DNS Settings:Read, Workers Builds Configuration:Read, Workers Pipelines:Read, Cloudforce One:Read, Zero Trust: PII:Read, Email Security:Read, AI Gateway:Read, DDoS Botnet Feed:Read, Queues:Read, Cloudflare Calls:Read, Address Maps:Read, Workers AI:Read, Vectorize:Read, Cloudflare One Networks:Read, Cloudflare One Connectors:Read, Cloudflare One Connector: WARP:Read, Cloudflare One Connector: cloudflared:Read, Hyperdrive:Read, Cloudchamber:Read, API Gateway:Read, Notifications:Read, URL Scanner:Read, Access: SSH Auditing:Read, Access: Custom Pages:Read, Constellation:Read, Cloudflare DEX:Read, IOT:Read, Page Shield:Read, Account: SSL and Certificates:Read, Allow Request Tracer:Read, Disable ESC:Read, Account Custom Pages:Read, Network flow:Read, HTTP Applications:Read, China Network Steering:Read, D1:Read, Pub/Sub:Read, Turnstile:Read, Intel:Read, Email Routing Addresses:Read, Cloudflare Pages:Read, Bulk URL Redirects:Read, Firewall policy:Read, L3/4 DDoS Managed Ruleset:Read, Transform Rules:Read, Select Configuration:Read, Account WAF:Read, Firewall Policy Packet Captures:Read, Workers R2 Storage:Read, Magic Transit:Read, Cloudflare Images:Read, DDoS Protection:Read, Account Rulesets:Read, IP Prefixes:Read, Workers Tail:Read, Account Analytics:Read, Cloudflare Tunnel:Read, Access: Mutual TLS Certificates:Read, Access: Device Posture:Read, Access: Service Tokens:Read, Access: Audit Logs:Read, Logs:Read, Rule Policies:Read, Account Filter Lists:Read, IP Prefixes: BGP On Demand:Read, Zero Trust:Read, Access: Organizations, Identity Providers, and Groups:Read, Workers KV Storage:Read, Workers Scripts:Read, Load Balancing: Monitors And Pools:Read, Account Firewall Access Rules:Read, DNS Firewall:Read, Stream:Read, Billing:Read, Account Settings:Read, Access: Apps and Policies:Read
+    All zones - AI Crawl Control:Read, DNS Settings:Read, Cloud Connector:Read, Fraud Detection:Read, Response Compression:Read, Page Shield:Read, Bot Management Feedback:Read, Snippets:Read, Dmarc Management:Read, Zone Versioning:Read, Disable ESC:Read, Custom Pages:Read, Config Rules:Read, Single Redirect:Read, API Gateway:Read, Cache Rules:Read, Custom Error Rules:Read, Zaraz:Read, Email Routing Rules:Read, Origin Rules:Read, Managed Headers:Read, Web3 Hostnames:Read, Transform Rules:Read, HTTP DDoS Managed Ruleset:Read, Sanitize:Read, Bot Management:Read, Zone WAF:Read, Health Checks:Read, Waiting Room:Read, Access: Apps and Policies:Read, Zone Settings:Read, Zone:Read, DNS:Read, Workers Routes:Read, SSL and Certificates:Read, Logs:Read, Page Rules:Read, Load Balancers:Read, Firewall Services:Read, Analytics:Read
 
-How about cf backend entities i.e. components (engine) that actual handle functionality.
+    1. cf entity taxonomy: resource, scope, permission, entity, services (produt), component(engine)
+        in domain knowledge, entity is general term ~ a top resource. 
+        top resource: zone + account: have idnetity and ownership
+        sub resrouces: A resource defines: A configurable capability, a functional object
+            acc: global
+                - Administrative Entities: Billing, Account Settings, Audit Logs.
+                - Global Security Entities: Account WAF, Account Firewall Access Rules, DNS Firewall.
+                - Developer/Compute Entities: Workers Scripts, Workers KV Storage, D1, Workers AI.
+                - Zero Trust Entities: Zero Trust, Access: Service Tokens, Cloudflare Tunnel.
+            zone: specific web
+                - Routing/Traffic Entities: DNS, Page Rules, Origin Rules, Single Redirect.
+                - Domain Security Entities: Zone WAF, Page Shield, SSL and Certificates.
+                - Domain Performance Entities: Cache Rules, Response Compression.
 
-One example: Ruleset. It have ruleset api resource, 
+        A service is a commercial and functional classification used for dashboard organization and product grouping. 
+        Selecting a service in the user interface causes the system to map that selection to a predefined array of resources. For example, the Zero Trust service maps directly to specific resources including Access Service Tokens and Access Audit Logs. During an API request, the authorization engine evaluates only the entity scope, the targeted resource, and the assigned permission
+        vice-versa: You updated one Resource (Account Filter Lists) within one Entity (your Account). Because the WAF, Zero Trust, Rate Limiting, and Magic Transit "Services" are just operational layers that query the same centralized list, they all inherit the change simultaneously without needing independent updates.
 
-rules vs rulesset?
-perm vs perm group
 
---------------------------------
-what 1 api cred created in the portal represent in Az auth system?
+    We've talked about api resource and service (product). They help customer configure cf
 
-- retry a message, what happen
-while retry, pass local show but worker console not show
-- is "GetAutomationAccount as function app" required for aware of AA that being deployed.
+    How about cf backend entities i.e. components (engine) that actual handle functionality.
+
+    One example: Ruleset. It have ruleset api resource, 
+
+    rules vs rulesset?
+    perm vs perm group
+
+    --------------------------------
+    what 1 api cred created in the portal represent in Az auth system?
+
+    - retry a message, what happen
+    while retry, pass local show but worker console not show
+    - is "GetAutomationAccount as function app" required for aware of AA that being deployed.
