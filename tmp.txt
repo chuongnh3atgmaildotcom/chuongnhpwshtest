@@ -1,128 +1,35 @@
-Azure.RequestFailedException
-  HResult=0x80131500
-  Message=The user, group or application 'appid=04f0c124-f2bc-4f59-8241-bf6df9866bbd;oid=f9a54707-897e-4cbd-a649-ded412570e4d;numgroups=7;iss=https://sts.windows.net/c6d260b3-0c63-4ced-b15b-ed462d08c5c4/' does not have secrets get permission on key vault 'DXCPaaS-Local;location=NorthEurope'. For help resolving this issue, please see https://go.microsoft.com/fwlink/?linkid=2125287
-Status: 403 (Forbidden)
-ErrorCode: Forbidden
 
-Content:
-{"error":{"code":"Forbidden","message":"The user, group or application 'appid=04f0c124-f2bc-4f59-8241-bf6df9866bbd;oid=f9a54707-897e-4cbd-a649-ded412570e4d;numgroups=7;iss=https://sts.windows.net/c6d260b3-0c63-4ced-b15b-ed462d08c5c4/' does not have secrets get permission on key vault 'DXCPaaS-Local;location=NorthEurope'. For help resolving this issue, please see https://go.microsoft.com/fwlink/?linkid=2125287","innererror":{"code":"AccessDenied"}}}
-
-Headers:
-Cache-Control: no-cache
-Pragma: no-cache
-x-ms-keyvault-region: North Europe
-x-ms-client-request-id: c07df032-2daa-4b7b-803f-6ef656684019
-x-ms-request-id: ac8145d6-7441-4afe-8682-cb22e9e40b42
-x-ms-keyvault-service-version: 1.9.3019.1
-x-ms-keyvault-network-info: conn_type=Ipv4;addr=103.37.29.106;act_addr_fam=InterNetwork;
-X-Content-Type-Options: REDACTED
-Strict-Transport-Security: REDACTED
-Date: Thu, 12 Feb 2026 03:34:32 GMT
-Content-Type: application/json; charset=utf-8
-Expires: -1
-Content-Length: 452
-
-  Source=Azure.Security.KeyVault.Secrets
-  StackTrace:
-   at Azure.Security.KeyVault.KeyVaultPipeline.<SendRequestAsync>d__29.MoveNext()
-   at Azure.Security.KeyVault.KeyVaultPipeline.<SendRequestAsync>d__21`1.MoveNext()
-   at Azure.Security.KeyVault.Secrets.SecretClient.<GetSecretAsync>d__8.MoveNext()
-   at Polly.Policy.<>c__DisplayClass208_0`1.<<ExecuteAsyncInternal>b__0>d.MoveNext()
-   at Polly.RetrySyntaxAsync.<>c__DisplayClass21_1.<<WaitAndRetryAsync>b__1>d.MoveNext()
-   at Polly.Retry.RetryEngine.<ImplementationAsync>d__1`1.MoveNext()
-   at Polly.Retry.RetryEngine.<ImplementationAsync>d__1`1.MoveNext()
-   at Polly.Policy.<ExecuteAsyncInternal>d__208`1.MoveNext()
-   at EPiServer.PaaS.Infrastructure.Configuration.KeyVaultManager.<>c__DisplayClass9_0.<GetSecret>b__0() in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\KeyVaultManager.cs:line 62
-   at EPiServer.PaaS.Infrastructure.Configuration.RuntimeCacheManager.ReadThrough[T](String key, Func`1 readValue) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\RuntimeCacheManager.cs:line 58
-   at EPiServer.PaaS.Infrastructure.Configuration.RuntimeCacheManager.ReadThroughLazyUpdating[T](String key, Func`1 readValue) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\RuntimeCacheManager.cs:line 71
-   at EPiServer.PaaS.Infrastructure.Configuration.KeyVaultManager.GetSecret(String secretName) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\KeyVaultManager.cs:line 58
-   at EPiServer.PaaS.Infrastructure.Configuration.PaasConfigurationManager.GetConnectionString(String key) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Infrastructure.Configuration\PaasConfigurationManager.cs:line 36
-   at EPiServer.PaaS.Services.Common.WorkerServiceBase.StartAsync(CancellationToken cancellationToken) in C:\Source\PaaS\PaaS\EPiServer.PaaS.Services.Common\WorkerServiceBase.cs:line 68
-   at Microsoft.Extensions.Hosting.Internal.Host.<<StartAsync>b__15_1>d.MoveNext()
+scope concept: 
+ see result of ps://developers.cloudflare.com/api/resources/firewall/subresources/access_rules/methods/create/#(params)%20default%20%3E%20(param)%20zone_id%20%3E%20(schema)
+ id, email, type (org/zone)
+ Scope is the entity (container) the rule is attached to
+ scenario 1: Two access rules in the same entity scope → same scope.id?
+  Yes. If you create two access rules in the same scope (e.g. same account, both via accounts/{account_id}/firewall/access_rules/rules with the same account_id), both rules will have the same scope in the API response: same scope.id, same scope.type.
+ scenario 2: if I create 2 kind-of-rules that have scope object as notion of scope, in same entity, they would have same scope.id?
+  If both rule types use a scope object (like IP Access Rules do) and both are created in the same entity (same account or same zone), then in practice yes – they should have the same scope.id.
+ scenario 3: if I create 1 access_rule in account and 1 access_rule in 1 of that accounts' zone, the first access rule is trickled down to zone, so they would have same scope.id?
+  No. They have different scope.id (and different scope.type).
+ The essence of my question is: the id itself is not identical, but uniqueness of using scope.id and entity.id in many scenarios is identical
+  If the only goal were “uniquely identify the entity,” a single entity id could be enough. The reason Cloudflare still uses a separate scope.id is mostly system boundaries, not uniqueness:
+  The firewall/access-rules service can keep its own identifier for “where this rule is attached” and store/index by that.
+  It doesn’t have to depend on the Accounts (or Zones/User) API’s notion of “entity id,” or guarantee that the two are the same.
+  So you get same uniqueness (one id per entity in each world) but different id spaces: firewall scope.id vs account/zone/user entity id. That avoids coupling and lets each system evolve its ids independently.
+  So: the uniqueness of using scope.id vs entity id is often the same; the id itself differs because they live in different systems, not because the concept of “one scope per entity” is different.
 
 
 
 
+Use Get-AzResource with the web app resource type so you only get lightweight resource records, then count them. That avoids loading full web app config (unlike Get-AzWebApp).
+    Count web apps in the current subscription:
+    (Get-AzResource -ResourceType Microsoft.Web/sites).Count
+    Count without keeping the list in memory (stream and count):
+    @(Get-AzResource -ResourceType Microsoft.Web/sites).Count
+    Only slots (exclude app root):
+    Slots are Microsoft.Web/sites/slots. To count only the main apps (no slots):
+    (Get-AzResource -ResourceType Microsoft.Web/sites | Where-Object { $_.ResourceId -notmatch '/slots/' }).Count
+    Get-AzResource -ResourceType Microsoft.Web/sites returns minimal resource objects (Id, Name, ResourceGroupName, Type, etc.), not full WebApp objects, so it’s more efficient than Get-AzWebApp when you only need a count. Azure doesn’t expose a “count only” API, so listing with this resource type is the usual approach.
 
 
-  C:\Python314\Scripts\
-  C:\Python314\
-  C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin
-  C:\windows\system32
-  C:\windows
-  C:\windows\System32\Wbem
-  C:\windows\System32\WindowsPowerShell\v1.0\
-  C:\windows\System32\OpenSSH\
-  C:\Program Files\WindowsPowerShell\Scripts
-  C:\Program Files\Microsoft SQL Server\170\Tools\Binn\
-  C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\
-  C:\Program Files\dotnet\
-  C:\Program Files\nodejs\
-  C:\ProgramData\chocolatey\bin
-  C:\Program Files\PowerShell\7\
-  C:\Program Files\Git\cmd
-  C:\Program Files\Docker\Docker\resources\bin
-  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WindowsApps
-  C:\Users\ChuongNguyen\AppData\Local\Programs\Microsoft VS Code\bin
-  C:\Users\ChuongNguyen\.dotnet\tools
-  C:\Users\ChuongNguyen\AppData\Local\PowerToys\DSCModules\
-  C:\Users\ChuongNguyen\AppData\Local\Programs\cursor\resources\app\bin
-  C:\Users\ChuongNguyen\AppData\Roaming\npm
-  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WinGet\Packages\paolosalvatori.ServiceBusExplorer_Microsoft.Winget.Source_8wekyb3d8bbwe\.
-  C:\Program Files\Vim\vim91
-  C:\Program Files\WindowsPowerShell\Modules\Az.Accounts\5.3.2\lib\netstandard2.0\runtimes\win-x64\native
-
-  C:\Python314\Scripts\
-  C:\Python314\
-  C:\Program Files\Microsoft SDKs\Azure\CLI2\wbin
-  C:\windows\system32
-  C:\windows
-  C:\windows\System32\Wbem
-  C:\windows\System32\WindowsPowerShell\v1.0\
-  C:\windows\System32\OpenSSH\
-  C:\Program Files\WindowsPowerShell\Scripts
-  C:\Program Files\Microsoft SQL Server\170\Tools\Binn\
-  C:\Program Files\Microsoft SQL Server\Client SDK\ODBC\170\Tools\Binn\
-  C:\Program Files\dotnet\
-  C:\Program Files\nodejs\
-  C:\ProgramData\chocolatey\bin
-  C:\Program Files\PowerShell\7\
-  C:\Program Files\Git\cmd
-  C:\Program Files\Docker\Docker\resources\bin
-  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WindowsApps
-  C:\Users\ChuongNguyen\AppData\Local\Programs\Microsoft VS Code\bin
-  C:\Users\ChuongNguyen\.dotnet\tools
-  C:\Users\ChuongNguyen\AppData\Local\PowerToys\DSCModules\
-  C:\Users\ChuongNguyen\AppData\Local\Programs\cursor\resources\app\bin
-  C:\Users\ChuongNguyen\AppData\Roaming\npm
-  C:\Users\ChuongNguyen\AppData\Local\Microsoft\WinGet\Packages\paolosalvatori.ServiceBusExplorer_Microsoft.Winget.Source_8wekyb3d8bbwe\.
-  C:\Program Files\Vim\vim91
-
-
-
-  Use Get-AzResource with the web app resource type so you only get lightweight resource records, then count them. That avoids loading full web app config (unlike Get-AzWebApp).
-Count web apps in the current subscription:
-(Get-AzResource -ResourceType Microsoft.Web/sites).Count
-Count without keeping the list in memory (stream and count):
-@(Get-AzResource -ResourceType Microsoft.Web/sites).Count
-Only slots (exclude app root):
-Slots are Microsoft.Web/sites/slots. To count only the main apps (no slots):
-(Get-AzResource -ResourceType Microsoft.Web/sites | Where-Object { $_.ResourceId -notmatch '/slots/' }).Count
-Get-AzResource -ResourceType Microsoft.Web/sites returns minimal resource objects (Id, Name, ResourceGroupName, Type, etc.), not full WebApp objects, so it’s more efficient than Get-AzWebApp when you only need a count. Azure doesn’t expose a “count only” API, so listing with this resource type is the usual approach.
-
-
-
-EPiServer.PaaS.Application\Common\CommonConstants.cs
- 
-  The regex PaasPortalKeyVaultSecretNameRegex blocks names starting with optimizely|episerver|dxpinternal|.... However,
-  OPTIMIZELY_DXP_DEPLOYMENT_ID starts with optimizely — so on Windows this prefix regex should already block it. But the
-   Linux regex (LinuxPaasPortalKeyVaultSecretNameRegex) is more restrictive and only blocks optimizely followed by
-  specific suffixes like turnstile, userflow, etc. — so it would not catch OPTIMIZELY_DXP_DEPLOYMENT_ID on Linux.
- 
-
-
-chngchuong1h3gz9inte    Linux
-OPTIMIZELY_DXP_DEPLOYMENT_ID 4aaa9e56-81c0-43c5-911e-a3a15efc3a26
 
 chngcommerc99sabinte    Linux
 chngcommerc99sabs001    Linux
@@ -130,51 +37,13 @@ chngcommerc99sabprep    Linux
 mgrchngcommercxa74ninte Windows
 chngcommercxa74ninte    Windows
 
-Principal
-Principal name
-Chuong Nguyen
-Object ID
-f9a54707-897e-4cbd-a649-ded412570e4d
-Application
-Authorized application
-chngchuong1h3gz9inte
-Object ID
-a558fb43-61b8-47e4-b8a0-dabc654a2b8a
 
-1. appsetting has secret guid
-2. portal: addsecret mock -> keyvault: has mock. tag: customer, nonsnesitive,  name
-
-4. portal: deploy
-    caveat2: portal: tag: toberemove true. appsetting (slot): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee
-5. portal: complete
-    caveat2: portal: tag: toberemove true. appsetting (prod): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee. SLot not have
 
 --------------------------------
-1. appsetting has secret guid
-2. portal: addsecret mock -> keyvault: has mock. tag: customer, nonsnesitive,  name
-3. portal: delete secret, secret show: to be removed -> keyvault: has mock same tag
+## external
+- I could create cms + commerce project in chng rs
+- default custom hostname: chngcmswin95r1zinte.paastest.epimore.com (chngcmswin95r1zinte created on https://dxcpaas-stage.epimore.com/ but default host name always paastest.epimore.com regardless of paas env). paastest.epimore.com NS is point to aws route53 with not so complex setup.
 
-4. portal: deploy
-    caveat3: portal + keyvault: tag: toberemove true. appsetting (slot): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee
-5. portal: complete
-    caveat3: portal + keyvault: tag: toberemove true. appsetting (prod): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee. SLot not have 
-6. have to make another deployment (80b4b5bd-8c1a-438d-adb2-bded474903d6 - awaiting verification?) -> delete secret in slot setting- > compplete the deployment to remove secret on keyvault (and reflected on portal)
-    
-
-windows:
-mgrchngcommercxa74ninte Windows
-
-1. appsetting has secret guid
-2. portal: addsecret mock -> keyvault: has mock. tag: customer, nonsnesitive,  name
-3. portal: delete secret, secret show: to be removed -> keyvault: has mock same tag
-
-4. portal: deploy
-    caveat3: portal + keyvault: tag: toberemove true. appsetting (slot): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee
-5. portal: complete
-    caveat3: portal + keyvault: tag: toberemove true. appsetting (prod): new jobID e4cf8351-eeba-4ec0-84fc-d80f52ed19ee. SLot not have 
-6. have to make another deployment (80b4b5bd-8c1a-438d-adb2-bded474903d6 - awaiting verification?) -> delete secret in slot setting- > compplete the deployment to remove secret on keyvault (and reflected on portal)
-
---------------------------------
 ### internal products development environment: 
 
 - same subs c58e3edc-13cf-497b-bcd3-d0cf2feaf596
@@ -185,17 +54,31 @@ mgrchngcommercxa74ninte Windows
             - deployed in local
             - use emulated container by aspire
             - use some resource (keyvault  etc.) in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaas-Local/overview
-            - use dev own servicebus resource
+            - use dev own servicebus resource in https://portal.azure.com/#resource/subscriptions/d34b6707-c9e0-4fd4-a412-adecf0b5a352/resourceGroups/chng-dev
         - deployment:
             - local branch
     - AA: 
         - RS: paas call AA IntegrationAutomation
         - deployment: this AA meant for local so have to deploy yourself when testing: goto github action, deploy branch to AA IntegrationAutomation or dirtier, go to appconfig and point to DevAutomationAccount-NE + DevAutomationAccount-NE 
-- dev 
+- staging: 
+    - paas 
+        - RS:
+            - custom host name: https://dxcpaas-stage.epimore.com/
+            - web infra deployed in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Stage/overview
+            - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaasstage/overview
+            - GetAutomationAccount function app at rs https://dxcpaasstagefunctio86350.azurewebsites.net/api/GetAutomationAccount?code=JbgaKt8ZqPSP...Zw==
+        - deployment:
+            - @TODO
+    - AA: 
+        - RS: rotate QAAutomationAccount + QAAutomationAccount-NE
+        - deployment:
+            - it's deployed daily. Check ...        
+- dev
+
     - paas 
         - RS:
             - custom host name: https://dxcpaas-dev.epimore.com/
-            - deployed in in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Dev/overview
+            - web infra deployed in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/DXCPaaS-Dev/overview
             - use container + servicebus in rs https://portal.azure.com/#@epipaastest.onmicrosoft.com/resource/subscriptions/c58e3edc-13cf-497b-bcd3-d0cf2feaf596/resourceGroups/dxppaasdev/overview
         - deployment:
             - check if relevant revision on the ...
@@ -216,11 +99,180 @@ mgrchngcommercxa74ninte Windows
         - deployment:
             
 
+- paas test:
+    - ps1 to be called by github action, basically just call to dotnet test
+    - 4 test solution folder with many projects: https://optimizely-ext.atlassian.net/wiki/spaces/DXCDev/pages/207389149/About+automated+testing
+
+- custom hostname flow: https://optimizely-ext.atlassian.net/wiki/spaces/dxcdev/pages/207390515/Hostnames
+    1. create app
+        - 1.1
+            - before
+            - during: 
+                - actor: client.
+                - action:  From turnstile/paas/az. create subscription
+            - after:
+                - output: a subscription with domain verification ID (can not observe) 
+        - 1.2.
+            - before:
+                - caveat: 1.1
+            - during:
+                - actor: customer
+                - action: create app
+            - after:
+                - output: 
+                    - az app with
+                        public virtual IP
+                        domain verification ID (same for all webapp/functionapp in one subscription)
+                        default custom hostname: chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net
+                    - new cf zone chngcmswin95r1zinte.dxptest.optimizely.com (only if fullzone custom domain ??)
+                    new dns records in exsiting cf zone cmstest.optimizely.com (only if cms saas ??) 
+                    new dns record in epimore.com: chngcmswin95r1zinte.paastest CNAME inte.chngcmswin95r1z.chng.epimore.com
+                    new dns record in awsr53: chngcmswin95r1zinte.paastest.epimore.com -> chngcmswin95r1zinte.paastest.epimore.com.cdn.cloudflare.net.
+                                     
+
+    2. add custom host name
+        - 2.1
+            - before:
+            - during:
+                - actor: customer
+                - action: add custom host name at pass portal
+                - input: inte.abc.paastest.co.uk
+            - after:
+                - causality: 2.3
+        - 2.3
+            - before:
+            - during:
+                - actor: paas
+                - action: call runbook Set-CloudflareBaseline.ps1
+            - after:
+                - output:
+                    cloudflare-verify.abc.paastest.co.uk TXT ..
+                    asuid.inte.abc.paastest.co.uk TXT ...
+                    CNAME inte.abc.paastest.co.uk inte.abc.paastest.co.uk.paastest.epimore.com
+                    new (partial) cf zone: .abc.paastest.co.uk. record: inte CNAME inte.chngcmswin95r1z.chng.epimore.com
+            - 2.3.1: debug: developer go to new (partial) cf zone: .abc.paastest.co.uk. record's and disable proxy flag, this enable full dig
+        - 2.4:
+            - before: 
+                - input: 2.1
+            - during:
+                - actor: customer
+                - action: go to their DNS provider, in this case AZ DNS, zone paastest.co.uk (similar to r53 zone epimore.com that stored default custom name)
+                - add CNAME inte.abc.paastest.co.uk inte.abc.paastest.co.uk.paastest.epimore.com
+            - after:
+                - CName point to cf zone and stopped there
+                ```
+                id 35245
+                opcode QUERY
+                rcode NOERROR
+                flags QR RD RA
+                ;QUESTION
+                inte.abc.paastest.co.uk. IN A
+                ;ANSWER
+                inte.abc.paastest.co.uk. 60 IN CNAME inte.abc.paastest.co.uk.paastest.epimore.com.
+                inte.abc.paastest.co.uk.paastest.epimore.com. 600 IN CNAME inte.abc.paastest.co.uk.cdn.cloudflare.net.
+                ;AUTHORITY
+                cloudflare.net. 1800 IN SOA ns1.cloudflare.net. dns.cloudflare.com. 2396714781 10000 2400 604800 1800
+                ;ADDITIONAL
+                ```
+        - 2.5:
+            - before: 
+                - input: 2.1
+            - during:
+                - actor: customer
+                - action: go to their DNS provider, put TXT cf
+            - after:
+                - cf zone active.
+                ```
+                    ...
+                    inte.abc.paastest.co.uk.cdn.cloudflare.net. 300 IN CNAME inte.chngcmswin95r1z.chng.epimore.com.
+                    ;AUTHORITY
+                    ;ADDITIONAL
+                ```
+        - 2.6:
+            - before: 
+                - input: 2.1
+            - during:
+                - actor: customer
+                - action: go to their DNS provider, put TXT asuid
+            - after:
+                - azurr zone active (internal AZ DNS created default when creating app - can not view config but can dig)
+                ```
+                    ...
+                    inte.chngcmswin95r1z.chng.epimore.com. 600 IN CNAME chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net.
+                    chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net. 60 IN CNAME waws-prod-db3-235.sip.azurewebsites.windows.net.
+                    waws-prod-db3-235.sip.azurewebsites.windows.net. 60 IN CNAME waws-prod-db3-235-a505.northeurope.cloudapp.azure.com.
+                    waws-prod-db3-235-a505.northeurope.cloudapp.azure.com. 10 IN A 20.107.224.1
+                    ;AUTHORITY
+                    ;ADDITIONAL
+                ```
+
+        
+- dns resolver flow: https://optimizely-ext.atlassian.net/wiki/spaces/WO/pages/200921934/4.1.5+-+Routing+DNS+domains+to+DXP
+    AZ webapp default custom hostname: chngcmswin95r1zinte-ecacauftb8c2f6aa.northeurope-01.azurewebsites.net
+    waws-prod-db3-235.sip.azurewebsites.windows.net.
+    waws-prod-db3-235-a505.northeurope.cloudapp.azure.com.
+    AZ webapp Virtual IP address 20.107.224.1
+
+
+    2. https://docs.developers.optimizely.com/digital-experience-platform/docs/environment-configurations
+
 --------------------------------    
+
+30755
+Add-CFAccount
+Add-CFCustomHostname
+Add-CFCustomSSLCertificate
+Add-CFDNSRecord
+Add-CFDNSZone
+Add-CFFirewallAccessRule
+Add-CFFirewallruleToZone
+Add-CFLBMonitor
+Add-CFLBOriginPool
+Add-CFLBRecord
+Add-CFPageRule
+Add-CFRuleset
+Add-CFRulesetRule
+Add-CFSpectrumApplication
+Add-CFWorkerRoute
+
+
+sample 
+ Read all resources API token summary
+ This API token will affect the below accounts and zones, along with their respective permissions
+ DXP DevTest - Account Waiting Room:Read, Cloudflare WAN:Read, Trust and Safety:Read, Browser Rendering:Read, DNS Views:Read, Radar:Read, Load Balancing: Account Load Balancers:Read, Cloudflare CDS Compute Account:Read, DNS Settings:Read, Workers Builds Configuration:Read, Workers Pipelines:Read, Cloudforce One:Read, Zero Trust: PII:Read, Email Security:Read, AI Gateway:Read, DDoS Botnet Feed:Read, Queues:Read, Cloudflare Calls:Read, Address Maps:Read, Workers AI:Read, Vectorize:Read, Cloudflare One Networks:Read, Cloudflare One Connectors:Read, Cloudflare One Connector: WARP:Read, Cloudflare One Connector: cloudflared:Read, Hyperdrive:Read, Cloudchamber:Read, API Gateway:Read, Notifications:Read, URL Scanner:Read, Access: SSH Auditing:Read, Access: Custom Pages:Read, Constellation:Read, Cloudflare DEX:Read, IOT:Read, Page Shield:Read, Account: SSL and Certificates:Read, Allow Request Tracer:Read, Disable ESC:Read, Account Custom Pages:Read, Network flow:Read, HTTP Applications:Read, China Network Steering:Read, D1:Read, Pub/Sub:Read, Turnstile:Read, Intel:Read, Email Routing Addresses:Read, Cloudflare Pages:Read, Bulk URL Redirects:Read, Firewall policy:Read, L3/4 DDoS Managed Ruleset:Read, Transform Rules:Read, Select Configuration:Read, Account WAF:Read, Firewall Policy Packet Captures:Read, Workers R2 Storage:Read, Magic Transit:Read, Cloudflare Images:Read, DDoS Protection:Read, Account Rulesets:Read, IP Prefixes:Read, Workers Tail:Read, Account Analytics:Read, Cloudflare Tunnel:Read, Access: Mutual TLS Certificates:Read, Access: Device Posture:Read, Access: Service Tokens:Read, Access: Audit Logs:Read, Logs:Read, Rule Policies:Read, Account Filter Lists:Read, IP Prefixes: BGP On Demand:Read, Zero Trust:Read, Access: Organizations, Identity Providers, and Groups:Read, Workers KV Storage:Read, Workers Scripts:Read, Load Balancing: Monitors And Pools:Read, Account Firewall Access Rules:Read, DNS Firewall:Read, Stream:Read, Billing:Read, Account Settings:Read, Access: Apps and Policies:Read
+ All zones - AI Crawl Control:Read, DNS Settings:Read, Cloud Connector:Read, Fraud Detection:Read, Response Compression:Read, Page Shield:Read, Bot Management Feedback:Read, Snippets:Read, Dmarc Management:Read, Zone Versioning:Read, Disable ESC:Read, Custom Pages:Read, Config Rules:Read, Single Redirect:Read, API Gateway:Read, Cache Rules:Read, Custom Error Rules:Read, Zaraz:Read, Email Routing Rules:Read, Origin Rules:Read, Managed Headers:Read, Web3 Hostnames:Read, Transform Rules:Read, HTTP DDoS Managed Ruleset:Read, Sanitize:Read, Bot Management:Read, Zone WAF:Read, Health Checks:Read, Waiting Room:Read, Access: Apps and Policies:Read, Zone Settings:Read, Zone:Read, DNS:Read, Workers Routes:Read, SSL and Certificates:Read, Logs:Read, Page Rules:Read, Load Balancers:Read, Firewall Services:Read, Analytics:Read
+
+1. cf entity taxonomy: resource, scope, permission, entity, services (produt), component(engine)
+    in domain knowledge, entity is general term ~ a top resource. 
+    top resource: zone + account: have idnetity and ownership
+    sub resrouces: A resource defines: A configurable capability, a functional object
+        acc: global
+            - Administrative Entities: Billing, Account Settings, Audit Logs.
+            - Global Security Entities: Account WAF, Account Firewall Access Rules, DNS Firewall.
+            - Developer/Compute Entities: Workers Scripts, Workers KV Storage, D1, Workers AI.
+            - Zero Trust Entities: Zero Trust, Access: Service Tokens, Cloudflare Tunnel.
+        zone: specific web
+            - Routing/Traffic Entities: DNS, Page Rules, Origin Rules, Single Redirect.
+            - Domain Security Entities: Zone WAF, Page Shield, SSL and Certificates.
+            - Domain Performance Entities: Cache Rules, Response Compression.
+
+    A service is a commercial and functional classification used for dashboard organization and product grouping. 
+    Selecting a service in the user interface causes the system to map that selection to a predefined array of resources. For example, the Zero Trust service maps directly to specific resources including Access Service Tokens and Access Audit Logs. During an API request, the authorization engine evaluates only the entity scope, the targeted resource, and the assigned permission
+    vice-versa: You updated one Resource (Account Filter Lists) within one Entity (your Account). Because the WAF, Zero Trust, Rate Limiting, and Magic Transit "Services" are just operational layers that query the same centralized list, they all inherit the change simultaneously without needing independent updates.
+
+
+We've talked about api resource and service (product). They help customer configure cf
+
+How about cf backend entities i.e. components (engine) that actual handle functionality.
+
+One example: Ruleset. It have ruleset api resource, 
+
+rules vs rulesset?
+perm vs perm group
+
+--------------------------------
 what 1 api cred created in the portal represent in Az auth system?
-service bus and their emulation in local paas
-NAT
-DNS
 
-
-
+- retry a message, what happen
+while retry, pass local show but worker console not show
+- is "GetAutomationAccount as function app" required for aware of AA that being deployed.
